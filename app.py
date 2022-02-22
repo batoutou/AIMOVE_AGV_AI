@@ -229,6 +229,7 @@ def calc_landmark_list(image, landmarks):
 
 
 def pre_process_landmark(landmark_list):
+    print(landmark_list)
     temp_landmark_list = copy.deepcopy(landmark_list)
 
     # Convert to relative coordinates
@@ -251,6 +252,8 @@ def pre_process_landmark(landmark_list):
         return n / max_value
 
     temp_landmark_list = list(map(normalize_, temp_landmark_list))
+    
+    print("temp_landmark_list")
 
     return temp_landmark_list
 
