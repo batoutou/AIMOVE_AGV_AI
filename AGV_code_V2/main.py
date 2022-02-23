@@ -1,30 +1,42 @@
 from attr import define
+from black import err
 import cv2
 import collections
 import numpy as np
 import pandas as pd
 
 from model_HMM import *
-from mediapipe1 import *
 from webcam_manager import *
 
-Mode = "TEST_MODE"
+Mode = "TRAIN_MODE"#"TEST_MODE"
 Model = "GMM"
 
-d = collections.deque(maxlen=30)
+path_train = r'C:\Users\franc\Desktop\RT_Detection_AGV\data\train'
+path_test = r'C:\Users\franc\Desktop\RT_Detection_AGV\data\test'
 
-cap = cv2.VideoCapture(0)   # For webcam input
+d = collections.deque(maxlen=30)
 
 previousTime = 0
 
 buff_np=np.zeros([30,42])
 
 if (Mode == "TRAIN_MODE"):
+    
     train_arrays=read_pickle(file_name = "save_train_data.pkl")
-    if(Mode == "GMM"):
-        GMM = train_model_GMM()
 
+    if(train_arrays.shape[0] == 0): #Si y a pas de données dans le pickle
+        print("Le dossier est vide")
+        train_arrays=data_extraction(path_test)
+        save_pickle(file_name = "save_train_data.pkl")
 
+    if(Model == "GMM"):
+        train_arrays=arrange_data_for_GMM(train_arrays)
+        GMM = train_model_GMM(train_arrays)
+
+import sys 
+sys.exit()
+
+cap = cv2.VideoCapture(0)   # For webcam input
 
 while True:#cap.isOpened():
 
