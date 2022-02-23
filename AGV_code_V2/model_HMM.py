@@ -6,6 +6,8 @@ from tqdm import tqdm
 import pickle
 from sklearn import mixture
 
+nb_classe=2
+
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 path = r'C:\Users\franc\Desktop\RT_Detection_AGV\data\train'
@@ -45,7 +47,7 @@ def path_extraction(path):
 #     return resultats
 
 def train_model_GMM(data_train):
-    gmm = mixture.GaussianMixture(n_components=42, max_iter=1000, covariance_type='full').fit(data_train)
+    gmm = mixture.GaussianMixture(n_components=nb_classe, max_iter=1000, covariance_type='full').fit(data_train)
     return gmm
 
 def predict_model_GMM(gmm, data_test):
