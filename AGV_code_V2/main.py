@@ -1,3 +1,4 @@
+from attr import define
 import cv2
 import collections
 import numpy as np
@@ -7,6 +8,9 @@ from model_HMM import *
 from mediapipe1 import *
 from webcam_manager import *
 
+Mode = "TEST_MODE"
+Model = "GMM"
+
 d = collections.deque(maxlen=30)
 
 cap = cv2.VideoCapture(0)   # For webcam input
@@ -14,6 +18,13 @@ cap = cv2.VideoCapture(0)   # For webcam input
 previousTime = 0
 
 buff_np=np.zeros([30,42])
+
+if (Mode == "TRAIN_MODE"):
+    train_arrays=read_pickle(file_name = "save_train_data.pkl")
+    if(Mode == "GMM"):
+        GMM = train_model_GMM()
+
+
 
 while True:#cap.isOpened():
 
@@ -31,10 +42,14 @@ while True:#cap.isOpened():
 
     image = draw_landmark(image, results)
 
-    L1 = exctract_joint_image(image, results)
+    list_joints_image = exctract_joint_image(image, results)
 
-    buff_np = np.array(d.append(normlization(L1)))
+    list_joints_image = normlization(list_joints_image)
 
+    buff_np = np.array(d.append(list_joints_image))
+
+    predict_model_GMM(GMM, np.array(list_joints_image))
+    
     # idx+=1
     
     # if (idx>30):
