@@ -21,17 +21,20 @@ previousTime = 0
 buff_np=np.zeros([30,42])
 
 if (Mode == "TRAIN_MODE"):
-    
+    # TODO
     train_arrays=read_pickle(file_name = "save_train_data.pkl")
+    #train_arrays=np.load(path_test)
 
     if(train_arrays.shape[0] == 0): #Si y a pas de données dans le pickle
-        print("Le dossier est vide")
+        print("No data in the pinkle file")
         train_arrays=data_extraction(path_test)
-        save_pickle(file_name = "save_train_data.pkl")
+        # TODO
+        save_pickle(file_name = "save_train_data.pkl")        
 
     if(Model == "GMM"):
         train_arrays=arrange_data_for_GMM(train_arrays)
         GMM = train_model_GMM(train_arrays)
+        print("GMM trained")
 
 import sys 
 sys.exit()
