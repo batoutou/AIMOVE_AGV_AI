@@ -38,8 +38,10 @@ def path_extraction(path):
 def data_extraction(path):
     gestures_list=[]
     list_gesture=[]
+    Y=[]
     train_dir=path_extraction(path)
     for gesture in range(len(train_dir)):
+        Y.append(gesture)
         for filename in glob.iglob(str(train_dir[gesture])[2:-2]+'\\\\*', recursive=True):
             V=read_video(filename)
             print("Video extraite de : ",filename)
@@ -47,7 +49,7 @@ def data_extraction(path):
         #V = np.expand_dims(V, axis = 0)
         list_gesture.append(V)
     train_arrays= np.array(list_gesture, dtype=object)
-    return train_arrays
+    return train_arrays, Y
 
 def read_video(path):
     mp_hands = mp.solutions.hands

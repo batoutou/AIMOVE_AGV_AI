@@ -5,8 +5,13 @@ import copy as copy
 from tqdm import tqdm
 import pickle
 from sklearn import mixture
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
 
-from feature_extractor import *
+from manager.feature_extractor import *
+
+model_save_path = "./model"
+RANDOM_SEED = 42
 
 nb_classe=2
 
@@ -19,8 +24,33 @@ def arrange_data_for_FCNN(train_arrays):
     for i in range(train_arrays.shape[0]): data=np.append(data,train_arrays[i], axis=0)
     return data#sum([train_arrays[i].shape[0] for i in range(train_arrays.shape[0])])
 
-def train_model_FCNN(data_train):
-    fcnn = mixture.GaussianMixture(n_components=nb_classe, max_iter=1000, covariance_type='full').fit(data_train)
+def train_model_FCNN(X_dataset, y_dataset):
+    
+    print(y_dataset)
+    
+    X_train, X_test, y_train, y_test = train_test_split(X_dataset, y_dataset, train_size=0.75, random_state=RANDOM_SEED)
+    
+    fcnn = fcnn_model()
+    
+    print(X_train.shape)
+    print(X_test.shape)
+    print(y_train.shape)
+    print(y_test.shape)
+    
+    # Model checkpoint callback
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(model_save_path, verbose=1, save_weights_only=False)
+    # Callback for early stopping
+    es_callback = tf.keras.callbacks.EarlyStopping(patience=20, verbose=1)
+    
+    # Model compilation
+    fcnn.compile(
+        optimizer='adam',
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    
+    fcnn.fit(X_train, y_train, epochs=100, batch_size=8, validation_data=(X_test, y_test),callbacks=[cp_callback, es_callback])
+    
     return fcnn
 
 def predict_model_FCNN(fcnn, data_test):
@@ -45,9 +75,14 @@ def read_video(path):
     cap.release()
     return data
 
-# path = r'C:\Users\franc\Desktop\RT_Detection_AGV\data\test\five\test1.mp4'
-# a=read_video(path)
-# print(a.shape)
-
-    
-
+def fcnn_model():
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Input((21 * 2, )),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(20, activation='relu'),
+        tf.keras.layers.Dropout(0.4),
+        tf.keras.layers.Dense(10, activation='relu'),
+        tf.keras.layers.Dense(nb_classe, activation='softmax')
+        ])
+        
+    return model

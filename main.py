@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 # from GMM.model_GMM import *
-# from FCNN.model_FCNN import *
+from FCNN.model_FCNN import *
 from manager.webcam_manager import *
 from manager.i_o_manager import *
 
@@ -28,22 +28,21 @@ buff_np=np.zeros([30,42])
 
 if (Mode == "TRAIN_MODE"):
     if os.path.isfile(path_train_pkl) == True:
-        train_arrays = read_pickle(path_train_pkl)
+        X_train, Y_train = read_pickle(path_train_pkl)
     else: #Si y a pas de données dans le pickle
         print("No data in the pinkle file")
-        train_arrays = data_extraction(path_train)
-        save_pickle(train_arrays, path_train_pkl)
-        print(train_arrays.shape)
+        X_train, Y_train = data_extraction(path_train)
+        save_pickle([X_train, Y_train], path_train_pkl)
 
-    sys.exit()
-    if(Model == "GMM"):
-        train_arrays = arrange_data_for_GMM(train_arrays)
-        GMM = train_model_GMM(train_arrays)
-        print("GMM trained")
+    # if(Model == "GMM"):
+    #     train_arrays = arrange_data_for_GMM(train_arrays)
+    #     GMM = train_model_GMM(train_arrays)
+    #     print("GMM trained")
         
     if(Model == "FCNN"):
-        train_arrays = arrange_data_for_FCNN(train_arrays)
-        FCNN = train_model_FCNN(train_arrays)
+        train_arrays = arrange_data_for_FCNN(X_train)
+        print("FCNN training\n")
+        FCNN = train_model_FCNN(X_train, Y_train)
         print("FCNN trained")
         
 
