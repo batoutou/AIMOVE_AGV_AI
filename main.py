@@ -8,17 +8,17 @@ import collections
 import numpy as np
 import pandas as pd
 
-from GMM.model_GMM import *
-from FCNN.model_FCNN import *
-from Mediapipe.webcam_manager import *
-
-from data import *
+# from GMM.model_GMM import *
+# from FCNN.model_FCNN import *
+from manager.webcam_manager import *
+from manager.i_o_manager import *
 
 Mode = "TRAIN_MODE"  # "TEST_MODE"
 Model = "FCNN"  # GMM
 
-path_train = "./data/train"# "C:\Users\bapti\OneDrive - mines-paristech.fr\Year project\Code\AIMOVE_AGV_AI\data\train"
+path_train = "./data/train"
 path_test = './data/test'
+path_train_pkl= './data/save_train_data.pkl'
 
 time_frame = collections.deque(maxlen=30)
 
@@ -27,21 +27,15 @@ previousTime = 0
 buff_np=np.zeros([30,42])
 
 if (Mode == "TRAIN_MODE"):
-    # TODO
-    # train_arrays = read_pickle(file_name = "save_train_data.pkl")
-    with open(path_train, 'r') as f:
-        train_arrays=np.load(f)
-    
-    print(train_arrays.shape)
-    
-    sys.exit()
-
-    if(train_arrays.shape[0] == 0): #Si y a pas de données dans le pickle
+    if os.path.isfile(path_train_pkl) == True:
+        train_arrays = read_pickle(path_train_pkl)
+    else: #Si y a pas de données dans le pickle
         print("No data in the pinkle file")
-        train_arrays = data_extraction(path_test)
-        # TODO
-        save_pickle(file_name = "save_train_data.pkl")        
+        train_arrays = data_extraction(path_train)
+        save_pickle(train_arrays, path_train_pkl)
+        print(train_arrays.shape)
 
+    sys.exit()
     if(Model == "GMM"):
         train_arrays = arrange_data_for_GMM(train_arrays)
         GMM = train_model_GMM(train_arrays)
@@ -53,7 +47,7 @@ if (Mode == "TRAIN_MODE"):
         print("FCNN trained")
         
 
-
+sys.exit()
 
 cap = cv2.VideoCapture(0)   # For webcam input
 
