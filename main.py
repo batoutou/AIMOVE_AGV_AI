@@ -1,20 +1,26 @@
 from attr import define
-from black import err
+
+import sys 
+import os
+
 import cv2
 import collections
 import numpy as np
 import pandas as pd
 
-from model_HMM import *
-from webcam_manager import *
+from GMM.model_GMM import *
+from FCNN.model_FCNN import *
+from Mediapipe.webcam_manager import *
 
-Mode = "TRAIN_MODE"#"TEST_MODE"
-Model = "GMM"
+from data import *
 
-path_train = r'C:\Users\franc\Desktop\RT_Detection_AGV\data\train'
-path_test = r'C:\Users\franc\Desktop\RT_Detection_AGV\data\test'
+Mode = "TRAIN_MODE"  # "TEST_MODE"
+Model = "FCNN"  # GMM
 
-d = collections.deque(maxlen=30)
+path_train = "./data/train"# "C:\Users\bapti\OneDrive - mines-paristech.fr\Year project\Code\AIMOVE_AGV_AI\data\train"
+path_test = './data/test'
+
+time_frame = collections.deque(maxlen=30)
 
 previousTime = 0
 
@@ -22,22 +28,32 @@ buff_np=np.zeros([30,42])
 
 if (Mode == "TRAIN_MODE"):
     # TODO
-    train_arrays=read_pickle(file_name = "save_train_data.pkl")
-    #train_arrays=np.load(path_test)
+    # train_arrays = read_pickle(file_name = "save_train_data.pkl")
+    with open(path_train, 'r') as f:
+        train_arrays=np.load(f)
+    
+    print(train_arrays.shape)
+    
+    sys.exit()
 
     if(train_arrays.shape[0] == 0): #Si y a pas de données dans le pickle
         print("No data in the pinkle file")
-        train_arrays=data_extraction(path_test)
+        train_arrays = data_extraction(path_test)
         # TODO
         save_pickle(file_name = "save_train_data.pkl")        
 
     if(Model == "GMM"):
-        train_arrays=arrange_data_for_GMM(train_arrays)
+        train_arrays = arrange_data_for_GMM(train_arrays)
         GMM = train_model_GMM(train_arrays)
         print("GMM trained")
+        
+    if(Model == "FCNN"):
+        train_arrays = arrange_data_for_FCNN(train_arrays)
+        FCNN = train_model_FCNN(train_arrays)
+        print("FCNN trained")
+        
 
-import sys 
-sys.exit()
+
 
 cap = cv2.VideoCapture(0)   # For webcam input
 
@@ -61,7 +77,7 @@ while True:#cap.isOpened():
 
     list_joints_image = normlization(list_joints_image)
 
-    buff_np = np.array(d.append(list_joints_image))
+    buff_np = np.array(time_frame.append(list_joints_image))
 
     predict_model_GMM(GMM, np.array(list_joints_image))
     

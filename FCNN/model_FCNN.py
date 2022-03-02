@@ -6,7 +6,7 @@ from tqdm import tqdm
 import pickle
 from sklearn import mixture
 
-from mediapipe1 import *
+from Mediapipe.feature_extractor import *
 
 nb_classe=2
 
@@ -14,7 +14,7 @@ np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 #hmm_models
 
-def save_pickle(file_name = "save_train_data.pkl"): #To save as pinkle
+def save_pickle(file_name = "save_train_data.pkl"): #To save as pickle
     file_name = "save_train_data.pkl"
     train_arrays=np.array([])
     open_file = open(file_name, "wb")
@@ -54,24 +54,17 @@ def data_extraction(path):
     return train_arrays
 
 
-# def model_HMM():
-#     resultats=[]
-#     for hmm_model_num in range(len(hmm_models)):
-#         res=hmm_models[hmm_model_num].score(np.array(buff_np))
-#         resultats.append(res)
-#     return resultats
-
-def arrange_data_for_GMM(train_arrays):
+def arrange_data_for_FCNN(train_arrays):
     data = np.empty((0,42))
     for i in range(train_arrays.shape[0]): data=np.append(data,train_arrays[i], axis=0)
     return data#sum([train_arrays[i].shape[0] for i in range(train_arrays.shape[0])])
 
-def train_model_GMM(data_train):
-    gmm = mixture.GaussianMixture(n_components=nb_classe, max_iter=1000, covariance_type='full').fit(data_train)
-    return gmm
+def train_model_FCNN(data_train):
+    fcnn = mixture.GaussianMixture(n_components=nb_classe, max_iter=1000, covariance_type='full').fit(data_train)
+    return fcnn
 
-def predict_model_GMM(gmm, data_test):
-    probs = gmm.predict_proba(data_test)
+def predict_model_FCNN(fcnn, data_test):
+    probs = fcnn.predict_proba(data_test)
     return probs
 
 def read_video(path):
