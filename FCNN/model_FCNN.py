@@ -26,54 +26,34 @@ def arrange_data_for_FCNN(train_arrays):
 
 def train_model_FCNN(X_dataset, y_dataset):
     
-    print(y_dataset)
-    
     X_train, X_test, y_train, y_test = train_test_split(X_dataset, y_dataset, train_size=0.75, random_state=RANDOM_SEED)
-    
     fcnn = fcnn_model()
-    
-    print(X_train.shape)
-    print(X_test.shape)
-    print(y_train.shape)
-    print(y_test.shape)
-    
-    # Model checkpoint callback
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(model_save_path, verbose=1, save_weights_only=False)
-    # Callback for early stopping
-    es_callback = tf.keras.callbacks.EarlyStopping(patience=20, verbose=1)
-    
-    # Model compilation
-    fcnn.compile(
+    print(fcnn.summary())
+        
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(model_save_path, verbose=1, save_weights_only=False)# Model checkpoint callback
+    es_callback = tf.keras.callbacks.EarlyStopping(patience=20, verbose=1)# Callback for early stopping
+        
+    fcnn.compile(# Model compilation
         optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
+    )    
+
+    fcnn.fit(
+        X_train, np.array(y_train),
+        epochs=100,
+        batch_size=256,
+        validation_data=(X_test, np.array(y_test)),
+        callbacks=[cp_callback, es_callback]
     )
-    
-    fcnn.fit(X_train, y_train, epochs=100, batch_size=8, validation_data=(X_test, y_test),callbacks=[cp_callback, es_callback])
-    
     return fcnn
 
 def predict_model_FCNN(fcnn, data_test):
-    probs = fcnn.predict_proba(data_test)
-    return probs
+    #probs = fcnn.predict_proba(data_test)
 
-def read_video(path):
-    mp_hands = mp.solutions.hands
-    cap = cv2.VideoCapture(path)
-    data = np.empty((0,42))
-    hands = mp_model()
-    while cap.isOpened():
-        success, image = cap.read()
-        if not success:
-            #print("Ignoring empty camera frame.")
-            break
-        results = hands.process(image)
-        L1=exctract_joint_image(image, results)
-        if(len(L1)==42):
-            L1=normlization(L1)
-            data = np.append(data, np.array([L1]), axis=0)
-    cap.release()
-    return data
+    probs=fcnn.predict(data_test)
+    predict_classes=np.argmax(probs,axis=1)
+    return predict_classes
 
 def fcnn_model():
     model = tf.keras.models.Sequential([
@@ -84,5 +64,4 @@ def fcnn_model():
         tf.keras.layers.Dense(10, activation='relu'),
         tf.keras.layers.Dense(nb_classe, activation='softmax')
         ])
-        
     return model

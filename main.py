@@ -7,13 +7,15 @@ import cv2
 import collections
 import numpy as np
 import pandas as pd
+from tensorflow import keras
+
 
 # from GMM.model_GMM import *
 from FCNN.model_FCNN import *
 from manager.webcam_manager import *
 from manager.i_o_manager import *
 
-Mode = "TRAIN_MODE"  # "TEST_MODE"
+Mode = "TEST_MODE"  # "TEST_MODE"
 Model = "FCNN"  # GMM
 
 path_train = "./data/train"
@@ -27,9 +29,9 @@ previousTime = 0
 buff_np=np.zeros([30,42])
 
 if (Mode == "TRAIN_MODE"):
-    if os.path.isfile(path_train_pkl) == True:
+    if os.path.isfile(path_train_pkl) == True:  #Si y a des données dans le pickle
         X_train, Y_train = read_pickle(path_train_pkl)
-    else: #Si y a pas de données dans le pickle
+    else:
         print("No data in the pinkle file")
         X_train, Y_train = data_extraction(path_train)
         save_pickle([X_train, Y_train], path_train_pkl)
@@ -38,15 +40,22 @@ if (Mode == "TRAIN_MODE"):
     #     train_arrays = arrange_data_for_GMM(train_arrays)
     #     GMM = train_model_GMM(train_arrays)
     #     print("GMM trained")
+    
         
     if(Model == "FCNN"):
-        train_arrays = arrange_data_for_FCNN(X_train)
-        print("FCNN training\n")
         FCNN = train_model_FCNN(X_train, Y_train)
         print("FCNN trained")
+        FCNN.save('FCNN/FCNN_model')
+        print("FCNN saved")
         
+if(Mode == "TEST_MODE"):
+    FCNN = keras.models.load_model('FCNN/FCNN_model')
 
-sys.exit()
+print(FCNN.summary())
+
+classes = class_extract('data/test')
+
+# sys.exit()
 
 cap = cv2.VideoCapture(0)   # For webcam input
 
@@ -70,9 +79,19 @@ while True:#cap.isOpened():
 
     list_joints_image = normlization(list_joints_image)
 
-    buff_np = np.array(time_frame.append(list_joints_image))
+    #buff_np = np.array(time_frame.append(list_joints_image))
 
-    predict_model_GMM(GMM, np.array(list_joints_image))
+    print(np.array(list_joints_image).shape)
+
+    # sys.exit()
+
+    if(len(list_joints_image)==42):
+        print(np.array(list_joints_image).shape)
+        # PROBLEM (maybe input data shape or type or just the predict function)
+        probs = predict_model_FCNN(FCNN, np.array(list_joints_image)) 
+        print(probs)
+
+    #predict_model_GMM(GMM, np.array(list_joints_image))
     
     # idx+=1
     

@@ -17,7 +17,6 @@ def save_pickle(train_arrays, file_name):
 def read_pickle(file_name): #To read pinkle file
     # open_file = open(file_name, "rb")
     # train_arrays = pickle.load(open_file)
-    # open_file.close()
 
     with open(file_name, "rb") as fp:
         all_data = pickle.load(fp)
@@ -36,20 +35,22 @@ def path_extraction(path):
     return train_dir
 
 def data_extraction(path):
-    gestures_list=[]
-    list_gesture=[]
-    Y=[]
+    train_arrays_X=np.empty((0,42))
+    list_gesture_Y=[]
     train_dir=path_extraction(path)
     for gesture in range(len(train_dir)):
-        Y.append(gesture)
         for filename in glob.iglob(str(train_dir[gesture])[2:-2]+'\\\\*', recursive=True):
-            V=read_video(filename)
+            X=read_video(filename)
             print("Video extraite de : ",filename)
             continue
         #V = np.expand_dims(V, axis = 0)
-        list_gesture.append(V)
-    train_arrays= np.array(list_gesture, dtype=object)
-    return train_arrays, Y
+        Y=[]
+        for i in range(X.shape[0]): 
+            Y.append(gesture)
+
+        train_arrays_X=np.concatenate((train_arrays_X, X), axis=0)
+        list_gesture_Y=list_gesture_Y + Y
+    return train_arrays_X, list_gesture_Y
 
 def read_video(path):
     mp_hands = mp.solutions.hands
