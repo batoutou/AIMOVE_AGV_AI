@@ -49,9 +49,7 @@ def train_model_FCNN(X_dataset, y_dataset):
     return fcnn
 
 def predict_model_FCNN(fcnn, data_test):
-    #probs = fcnn.predict_proba(data_test)
-
-    probs=fcnn.predict(data_test)
+    probs=fcnn.predict(data_test.reshape(1, 42))
     predict_classes=np.argmax(probs,axis=1)
     return predict_classes
 

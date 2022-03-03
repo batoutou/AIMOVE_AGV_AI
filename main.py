@@ -41,7 +41,6 @@ if (Mode == "TRAIN_MODE"):
     #     GMM = train_model_GMM(train_arrays)
     #     print("GMM trained")
     
-        
     if(Model == "FCNN"):
         FCNN = train_model_FCNN(X_train, Y_train)
         print("FCNN trained")
@@ -79,17 +78,10 @@ while True:#cap.isOpened():
 
     list_joints_image = normlization(list_joints_image)
 
-    #buff_np = np.array(time_frame.append(list_joints_image))
-
     print(np.array(list_joints_image).shape)
 
-    # sys.exit()
-
     if(len(list_joints_image)==42):
-        print(np.array(list_joints_image).shape)
-        # PROBLEM (maybe input data shape or type or just the predict function)
         probs = predict_model_FCNN(FCNN, np.array(list_joints_image)) 
-        print(probs)
 
     #predict_model_GMM(GMM, np.array(list_joints_image))
     
