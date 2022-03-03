@@ -77,7 +77,7 @@ while True:#cap.isOpened():
     list_joints_image = normlization(list_joints_image)
 
     #print(np.array(list_joints_image).shape)
-    C="Pas de classe détéctée pute"
+    C="Pas de classe bro"
     if(len(list_joints_image)==42):
         probs = predict_model_FCNN(FCNN, list_joints_image) 
         print(classes[int(probs)])
