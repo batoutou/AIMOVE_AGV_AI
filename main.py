@@ -50,8 +50,6 @@ if (Mode == "TRAIN_MODE"):
 if(Mode == "TEST_MODE"):
     FCNN = keras.models.load_model('FCNN/FCNN_model')
 
-print(FCNN.summary())
-
 classes = class_extract('data/test')
 
 # sys.exit()
@@ -78,10 +76,13 @@ while True:#cap.isOpened():
 
     list_joints_image = normlization(list_joints_image)
 
-    print(np.array(list_joints_image).shape)
-
+    #print(np.array(list_joints_image).shape)
+    C="Pas de classe détéctée pute"
     if(len(list_joints_image)==42):
-        probs = predict_model_FCNN(FCNN, np.array(list_joints_image)) 
+        probs = predict_model_FCNN(FCNN, list_joints_image) 
+        print(classes[int(probs)])
+        #classe_display(classes[int(probs)], image)
+        C=classes[int(probs)]
 
     #predict_model_GMM(GMM, np.array(list_joints_image))
     
@@ -104,7 +105,7 @@ while True:#cap.isOpened():
     # else:
     #   print("No matching signs ")
 
-    previousTime, image = FPS(previousTime, image)
+    previousTime, image = FPS(C, previousTime, image)
 
     cv2.imshow('MediaPipe Hands', image)
 
