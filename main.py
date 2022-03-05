@@ -15,7 +15,8 @@ from FCNN.model_FCNN import *
 from manager.webcam_manager import *
 from manager.i_o_manager import *
 
-Mode = "TEST_MODE"  # "TEST_MODE"
+# Mode = "TRAIN_MODE"
+Mode = "TEST_MODE"
 Model = "FCNN"  # GMM
 
 path_train = "./data/train"
@@ -50,8 +51,8 @@ if (Mode == "TRAIN_MODE"):
 if(Mode == "TEST_MODE"):
     FCNN = keras.models.load_model('FCNN/FCNN_model')
 
-classes = class_extract('data/test')
-
+classes = class_extract('data/train')
+print("classes : ",classes)
 # sys.exit()
 
 cap = cv2.VideoCapture(0)   # For webcam input
@@ -80,9 +81,11 @@ while True:#cap.isOpened():
     C="Pas de classe bro"
     if(len(list_joints_image)==42):
         probs = predict_model_FCNN(FCNN, list_joints_image) 
+        
         print(classes[int(probs)])
         #classe_display(classes[int(probs)], image)
         C=classes[int(probs)]
+    C = mean_classes(C,classes)
 
     #predict_model_GMM(GMM, np.array(list_joints_image))
     

@@ -38,7 +38,7 @@ def data_extraction(path):
     train_arrays_X=np.empty((0,42))
     list_gesture_Y=[]
     train_dir=path_extraction(path)
-    for gesture in range(len(train_dir)):
+    for gesture in tqdm.tqdm(range(len(train_dir))):
         for filename in glob.iglob(str(train_dir[gesture])[2:-2]+'\\\\*', recursive=True):
             X=read_video(filename)
             print("Video extraite de : ",filename)
@@ -57,6 +57,7 @@ def read_video(path):
     cap = cv2.VideoCapture(path)
     data = np.empty((0,42))
     hands = mp_model()
+    # tqdm.tqdm(range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))))
     while cap.isOpened():
         success, image = cap.read()
         if not success:
