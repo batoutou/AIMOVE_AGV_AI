@@ -14,11 +14,12 @@ from tensorflow import keras
 from FCNN.model_FCNN import *
 from manager.webcam_manager import *
 from manager.i_o_manager import *
+from manager.actions import *
 
 # Mode = "TRAIN_MODE"
 Mode = "TEST_MODE"
 Model = "FCNN"  # GMM
-
+FPS_selected = 10
 path_train = "./data/train"
 path_test = './data/test'
 path_train_pkl= './data/save_train_data.pkl'
@@ -81,9 +82,6 @@ while True:#cap.isOpened():
     C="Pas de classe bro"
     if(len(list_joints_image)==42):
         probs = predict_model_FCNN(FCNN, list_joints_image) 
-        
-        print(classes[int(probs)])
-        #classe_display(classes[int(probs)], image)
         C=classes[int(probs)]
     C = mean_classes(C,classes)
 
@@ -108,9 +106,11 @@ while True:#cap.isOpened():
     # else:
     #   print("No matching signs ")
 
-    previousTime, image = FPS(C, previousTime, image)
+    time_prog, previousTime, image = FPS(C, previousTime, image)
 
     cv2.imshow('MediaPipe Hands', image)
+
+    sleep(time_prog, FPS_selected)
 
     pressedKey = cv2.waitKey(1) & 0xFF
 
