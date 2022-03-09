@@ -9,7 +9,7 @@ def FPS(message, classe,previousTime, image):
     previousTime = currentTime
     cv2.putText(image, str(int(fps))+" FPS", (10, 120), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0), 2)  # Displaying FPS on the image
     # cv2.putText(image, str("Classe : "+classe), (10, 180), cv2.FONT_HERSHEY_COMPLEX, 1, (0,255,0), 2)
-    cv2.putText(image, str("Order : "+message), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0), 2) 
+    cv2.putText(image, str(message), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0), 2) 
     return t_prog, previousTime, image
 
 # def classe_display(classe, image):

@@ -25,7 +25,7 @@ class action:
 
         if self.action=="Validation_step": #validation step
             if current_classe == self.classes[-1]:
-                self.message=str("Let's go to post " + self.next_poste+"!")
+                self.message=str("Let's go to the station " + self.next_poste+"!")
                 self.action="Action"
             if current_classe == self.classes[-2]:
                 self.message="Action canceled !"
