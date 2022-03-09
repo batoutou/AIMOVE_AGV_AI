@@ -56,7 +56,10 @@ classes = class_extract('data/train')
 print("classes : ",classes)
 # sys.exit()
 
-cap = cv2.VideoCapture(0)   # For webcam input
+cap = cv2.VideoCapture(1)   # For webcam input, 0 original webcam, q1 extern webcam
+
+# To order the actions
+act = action(classes)
 
 while True:#cap.isOpened():
 
@@ -70,20 +73,29 @@ while True:#cap.isOpened():
     
     image.flags.writeable = True
     
-    results = hands.process(image)
+    # results = hands.process(image)q
+    image, results = mediapipe_detection(image, hands)
 
     image = draw_landmark(image, results)
 
     list_joints_image = exctract_joint_image(image, results)
+    #feature_vectorq
 
-    list_joints_image = normlization(list_joints_image)
+    # list_joints_image = normlization(list_joints_image)
+    
 
     #print(np.array(list_joints_image).shape)
     C="Pas de classe bro"
     if(len(list_joints_image)==42):
+        list_joints_image=pre_process_landmark(list_joints_image)
+
         probs = predict_model_FCNN(FCNN, list_joints_image) 
+        
         C=classes[int(probs)]
     C = mean_classes(C,classes)
+
+    message = act.add_action(C)
+    print(message)
 
     #predict_model_GMM(GMM, np.array(list_joints_image))
     
@@ -106,7 +118,7 @@ while True:#cap.isOpened():
     # else:
     #   print("No matching signs ")
 
-    time_prog, previousTime, image = FPS(C, previousTime, image)
+    time_prog, previousTime, image = FPS(message, C, previousTime, image)
 
     cv2.imshow('MediaPipe Hands', image)
 

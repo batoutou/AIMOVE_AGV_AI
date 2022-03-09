@@ -16,7 +16,7 @@ from manager.feature_extractor import *
 model_save_path = "./model"
 RANDOM_SEED = 42
 buff = collections.deque(maxlen=10)
-nb_classe=7
+nb_classe=8
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
@@ -40,7 +40,7 @@ def train_model_FCNN(X_dataset, y_dataset):
     X_train, X_test, y_train, y_test = train_test_split(X_dataset, y_dataset, train_size=0.75, random_state=RANDOM_SEED)
     fcnn = fcnn_model()
     print(fcnn.summary())
-        
+
     cp_callback = tf.keras.callbacks.ModelCheckpoint(model_save_path, verbose=1, save_weights_only=False)# Model checkpoint callback
     es_callback = tf.keras.callbacks.EarlyStopping(patience=20, verbose=1)# Callback for early stopping
         
@@ -53,11 +53,10 @@ def train_model_FCNN(X_dataset, y_dataset):
     fcnn.fit(
         X_train, np.array(y_train),
         epochs=500,
-        batch_size=128,
+        batch_size=32,
         validation_data=(X_test, np.array(y_test)),
         callbacks=[cp_callback, es_callback]
     )
-
     
     return fcnn
 
