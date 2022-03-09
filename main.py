@@ -20,6 +20,7 @@ from manager.actions import *
 Mode = "TEST_MODE"
 Model = "FCNN"  # GMM
 FPS_selected = 10
+ratio_image = 1.3
 path_train = "./data/train"
 path_test = './data/test'
 path_train_pkl= './data/save_train_data.pkl'
@@ -118,6 +119,8 @@ while True:#cap.isOpened():
     #   print("No matching signs ")
 
     time_prog, previousTime, image = FPS(message, C, previousTime, image)
+
+    image = cv2.resize(image, (0,0), fx=ratio_image, fy=ratio_image) 
 
     cv2.imshow('MediaPipe Hands', image)
 

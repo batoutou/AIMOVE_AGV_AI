@@ -35,18 +35,20 @@ class action:
             self.action="Validation_step"
             self.next_poste=current_classe
             self.message=str("Do you validate station "+current_classe+ "?")
-        print(self.message)
         return self.message
 
 
-def class_extract(path):
-    classes = next(os.walk( path) )
-    classes=classes[1]
-    return classes
+
 
 
 #test
 if __name__ == '__main__':
+    
+    def class_extract(path):
+        classes = next(os.walk( path) )
+        classes=classes[1]
+        return classes
+
     print(class_extract('data/train'))
     A=action(class_extract('data/train')) #["Stop","1","2","oui","non"])
 
