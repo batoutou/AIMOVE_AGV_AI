@@ -6,6 +6,7 @@ import copy as copy
 from tqdm import tqdm
 import pickle
 from sklearn import mixture
+import copy, itertools
 
 from manager.feature_extractor import *
 
@@ -77,10 +78,6 @@ def read_video(path):
             data = np.append(data, np.array([L1]), axis=0)
     cap.release()
     return data
-
-
-
-import copy, itertools
 
 def pre_process_landmark(L):
     landmark_list=np.array([L]).reshape((21, 2))

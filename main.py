@@ -95,7 +95,6 @@ while True:#cap.isOpened():
     C = mean_classes(C,classes)
 
     message = act.add_action(C)
-    print(message)
 
     #predict_model_GMM(GMM, np.array(list_joints_image))
     
