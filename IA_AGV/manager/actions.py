@@ -20,7 +20,7 @@ class action:
     def add_action(self, current_classe):
         # print("current_classe : ",current_classe)
         if current_classe==self.classes[0]: #stop
-            self.message="Robot stoped !"
+            self.message="Robot stopped !"
             self.stop=1
 
         if self.action=="Validation_step": #validation step
