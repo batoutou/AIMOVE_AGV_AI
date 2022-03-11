@@ -1,0 +1,76 @@
+import cv2
+from FCNN.model_FCNN import *
+from manager.webcam_manager import *
+from manager.i_o_manager import *
+from manager.actions import *
+import keras
+
+buff = collections.deque(maxlen=10)
+
+class camera:
+    def __init__(self, nb_cam):
+        self.nb_cam=nb_cam
+        self.image=0
+        self.success=0
+        self.mean_C=0
+        self.cap = cv2.VideoCapture(nb_cam)
+        self.buff = collections.deque(maxlen=10)
+        self.image_height, self.image_width = self.height_width()
+
+    def height_width(self):
+        _, image = self.cap.read()
+        h,w,_ = image.shape
+        return h, w
+
+    def read_frame(self):
+        self.success, self.image = self.cap.read()
+        self.image_height, self.image_width,_ =self.image.shape
+        if not self.success:
+            print("Ignoring empty camera frame.")
+        
+
+    def detect_class(self,FCNN,classes):
+        hands = mp_model()
+        self.image.flags.writeable = True
+        self.image, results = mediapipe_detection(self.image, hands)
+        self.image = draw_landmark(self.image, results)
+        list_joints_image = exctract_joint_image(self.image, results)
+        C="No class detected"
+        if(len(list_joints_image)==42):
+            list_joints_image=pre_process_landmark(list_joints_image)
+            probs = predict_model_FCNN(FCNN, list_joints_image)
+            C=classes[int(probs)]
+        self.mean_C = mean_classes(self.buff, C,classes)
+
+    def show(self):
+        cv2.putText(self.image, str(self.mean_C), (10,  self.image_height-10), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
+        cv2.imshow('Test class image', self.image)
+
+    def mean_classes(C,classes_list):
+        buff.append(C)
+        list_sorted =  Counter(buff)
+        # max_key = max(list_sorted.iteritems(), key=operator.itemgetter(1))[0]
+        max_key = max(list_sorted.items(), key=operator.itemgetter(1))[0]
+        return max_key
+
+if __name__ == "__main__":
+    cap_0 = camera(0)
+    cap_1 = camera(1)
+    
+    FCNN = keras.models.load_model(r'IA_AGV\FCNN\FCNN_model')
+    classes = class_extract(r'IA_AGV\data\train')
+    print("classes : ", classes)
+
+    while(True):
+        cap_0.read_frame()
+        cap_1.read_frame()
+        cap_0.detect_class(FCNN,classes)
+        cap_1.detect_class(FCNN,classes)
+        cap_0.show()
+        cap_1.show()
+        print("Moyenne camera 1 : ",cap_0.mean_C,"\n","Moyenne camera 2 : ",cap_1.mean_C)
+        if cv2.waitKey(1) & 0xFF == ord("q"): 
+            cap_0.cap.release()
+            break
+
+

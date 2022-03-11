@@ -15,15 +15,14 @@ from manager.feature_extractor import *
 
 model_save_path = "./model"
 RANDOM_SEED = 42
-buff = collections.deque(maxlen=10)
+# buff = collections.deque(maxlen=10)
 nb_classe=8
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 #hmm_models
-def mean_classes(C,classes_list):
+def mean_classes(buff, C,classes_list):
     buff.append(C)
-    # list = [buff.count(classe) for classe in classes_list]
     list_sorted =  Counter(buff)
     # max_key = max(list_sorted.iteritems(), key=operator.itemgetter(1))[0]
     max_key = max(list_sorted.items(), key=operator.itemgetter(1))[0]

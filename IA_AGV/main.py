@@ -15,6 +15,7 @@ from FCNN.model_FCNN import *
 from manager.webcam_manager import *
 from manager.i_o_manager import *
 from manager.actions import *
+from class_camera import *
 
 # Mode = "TRAIN_MODE"
 Mode = "TEST_MODE"
@@ -24,7 +25,7 @@ path_train = "./data/train"
 path_test = "./data/test"
 path_train_pkl= "./data/save_train_data.pkl"
 previousTime = 0
-
+list_cam=[]
 
 if (Mode == "TRAIN_MODE"):
     if os.path.isfile(path_train_pkl) == True:  #Si y a des données dans le pickle
@@ -48,8 +49,9 @@ print("classes : ",classes)
 cap = cv2.VideoCapture(0)   # For webcam input, 0 original webcam, q1 extern webcam
 
 act = action(classes)  # To order the actions
+cap = cap(0)
 
-while True:#cap.isOpened():
+while True: #cap.isOpened():
 
     success, image = cap.read()
 
