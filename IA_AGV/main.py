@@ -2,7 +2,7 @@ from attr import define
 
 import sys 
 import os
-
+import zmq
 import cv2
 import collections
 import numpy as np
@@ -47,6 +47,11 @@ print("classes : ",classes)
 # sys.exit()
 
 
+context = zmq.Context()
+
+print("Connecting to hello world server…")  #  Socket to talk to server
+socket = context.socket(zmq.REQ)
+socket.connect("tcp://172.20.10.2:5555")
 
 video_stream_widget = VideoStreamWidget(0)
 video_stream_widget1 = VideoStreamWidget(1)
