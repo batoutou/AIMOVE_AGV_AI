@@ -25,7 +25,6 @@ path_train = "./data/train"
 path_test = "./data/test"
 path_train_pkl= "./data/save_train_data.pkl"
 previousTime = 0
-list_cam=[]
 
 if (Mode == "TRAIN_MODE"):
     if os.path.isfile(path_train_pkl) == True:  #Si y a des données dans le pickle
@@ -51,8 +50,8 @@ context = zmq.Context()
 
 print("Connecting to hello world server…")  #  Socket to talk to server
 socket = context.socket(zmq.REQ)
-# socket.connect("tcp://172.20.10.2:5555")
-socket.connect("tcp://172.20.10.14:5555")
+socket.connect("tcp://172.20.10.2:5555")
+# socket.connect("tcp://172.20.10.14:5555")
 
 video_stream_widget = VideoStreamWidget(0)
 video_stream_widget1 = VideoStreamWidget(1)
@@ -79,7 +78,7 @@ while True: #cap.isOpened():
 
     # cv2.imshow('MediaPipe Hands', image)
 
-    # sleep(time_prog, FPS_selected)
+    sleep(video_stream_widget.time_prog, video_stream_widget.FPS)
 
     # pressedKey = cv2.waitKey(1) & 0xFF
 
