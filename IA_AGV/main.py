@@ -48,38 +48,21 @@ print("classes : ",classes)
 
 cap = cv2.VideoCapture(0)   # For webcam input, 0 original webcam, q1 extern webcam
 
+video_stream_widget = VideoStreamWidget(0)
+video_stream_widget1 = VideoStreamWidget(1)
+
 act = action(classes)  # To order the actions
 cap = cap(0)
 
 while True: #cap.isOpened():
-
-    success, image = cap.read()
-
-    if not success:
-        print("Ignoring empty camera frame.")
-        continue
-
-    hands = mp_model()
+    classe_detected_1 = video_stream_widget.detect_class(FCNN,classes)
+    classe_detected_2 = video_stream_widget1.detect_class(FCNN,classes)
     
-    image.flags.writeable = True
+    video_stream_widget.show_frame()
+    video_stream_widget1.show_frame()
 
-    image, results = mediapipe_detection(image, hands)
-
-    image = draw_landmark(image, results)
-
-    list_joints_image = exctract_joint_image(image, results)
-
-    C="No class detected"
-
-    if(len(list_joints_image)==42):
-        list_joints_image=pre_process_landmark(list_joints_image)
-
-        probs = predict_model_FCNN(FCNN, list_joints_image) 
-        
-        C=classes[int(probs)]
-    C = mean_classes(C,classes)
-
-    message_cv2, message_robot = act.add_action(C)
+    message1_cv2, message1_robot = act.add_action(classe_detected_1)
+    message2_cv2, message2_robot = act.add_action(classe_detected_2)
 
     if(message_robot!=-1): print(message_robot)
 
