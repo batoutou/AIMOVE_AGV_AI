@@ -46,7 +46,7 @@ classes = class_extract(r'IA_AGV\data\train')
 print("classes : ",classes)
 # sys.exit()
 
-cap = cv2.VideoCapture(0)   # For webcam input, 0 original webcam, q1 extern webcam
+
 
 video_stream_widget = VideoStreamWidget(0)
 video_stream_widget1 = VideoStreamWidget(1)
@@ -64,7 +64,8 @@ while True: #cap.isOpened():
     message1_cv2, message1_robot = act.add_action(classe_detected_1)
     message2_cv2, message2_robot = act.add_action(classe_detected_2)
 
-    if(message_robot!=-1): print(message_robot)
+    if(message1_robot!=-1): send_message(socket, message1_robot)
+    if(message2_robot!=-1): send_message(socket, message2_robot)
 
     time_prog, previousTime, image = FPS(message_cv2, C, previousTime, image)
 
