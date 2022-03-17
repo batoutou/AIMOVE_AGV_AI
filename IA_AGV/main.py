@@ -57,7 +57,6 @@ video_stream_widget = VideoStreamWidget(0)
 video_stream_widget1 = VideoStreamWidget(1)
 
 act = action(classes)  # To order the actions
-cap = cap(0)
 
 while True: #cap.isOpened():
     classe_detected_1 = video_stream_widget.detect_class(FCNN,classes)
@@ -72,16 +71,16 @@ while True: #cap.isOpened():
     if(message1_robot!=-1): send_message(socket, message1_robot)
     if(message2_robot!=-1): send_message(socket, message2_robot)
 
-    time_prog, previousTime, image = FPS(message_cv2, C, previousTime, image)
+    # time_prog, previousTime, image = FPS(message_cv2, C, previousTime, image)
 
-    image = cv2.resize(image, (0,0), fx=ratio_image, fy=ratio_image) 
+    # image = cv2.resize(image, (0,0), fx=ratio_image, fy=ratio_image) 
 
-    cv2.imshow('MediaPipe Hands', image)
+    # cv2.imshow('MediaPipe Hands', image)
 
-    sleep(time_prog, FPS_selected)
+    # sleep(time_prog, FPS_selected)
 
-    pressedKey = cv2.waitKey(1) & 0xFF
+    # pressedKey = cv2.waitKey(1) & 0xFF
 
-    if pressedKey == ord("q"): 
-        cap.release()
-        break
+    # if pressedKey == ord("q"): 
+    #     cap.release()
+    #     break

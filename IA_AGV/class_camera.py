@@ -78,8 +78,8 @@ if __name__ == '__main__':
 
     while True:
         try:
-            video_stream_widget.DT(FCNN,classes)
-            video_stream_widget1.DT(FCNN,classes)
+            video_stream_widget.detect_class(FCNN,classes)
+            video_stream_widget1.detect_class(FCNN,classes)
             
             video_stream_widget.show_frame()
             video_stream_widget1.show_frame()
