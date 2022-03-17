@@ -49,6 +49,13 @@ cap = cv2.VideoCapture(0)   # For webcam input, 0 original webcam, q1 extern web
 
 act = action(classes)  # To order the actions
 
+import zmq
+context = zmq.Context()
+#  Socket to talk to server
+print("Connecting to hello world server…")
+socket = context.socket(zmq.REQ)
+socket.connect("tcp://172.20.10.2:5555")
+
 while True:#cap.isOpened():
 
     success, image = cap.read()
@@ -75,11 +82,17 @@ while True:#cap.isOpened():
         probs = predict_model_FCNN(FCNN, list_joints_image) 
         
         C=classes[int(probs)]
+
     C = mean_classes(C,classes)
 
     message_cv2, message_robot = act.add_action(C)
 
-    if(message_robot!=-1): print(message_robot)
+    if(message_robot!=-1):
+        print("Sending request {}".format(message_robot))
+        socket.send(message_robot.encode())
+        
+        message = socket.recv()#  Get the reply.
+        print("Received reply %s" % (message))
 
     time_prog, previousTime, image = FPS(message_cv2, C, previousTime, image)
 
