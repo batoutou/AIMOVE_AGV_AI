@@ -40,9 +40,9 @@ if (Mode == "TRAIN_MODE"):
     FCNN.save('FCNN/FCNN_model')
     print("FCNN saved")
         
-if(Mode == "TEST_MODE"): FCNN = keras.models.load_model(r'IA_AGV\FCNN\FCNN_model')
+if(Mode == "TEST_MODE"): FCNN = keras.models.load_model(r'FCNN\FCNN_model')
 
-classes = class_extract(r'IA_AGV\data\train')
+classes = class_extract(r'data\train')
 print("classes : ",classes)
 # sys.exit()
 
@@ -51,7 +51,8 @@ context = zmq.Context()
 
 print("Connecting to hello world server…")  #  Socket to talk to server
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://172.20.10.2:5555")
+# socket.connect("tcp://172.20.10.2:5555")
+socket.connect("tcp://172.20.10.14:5555")
 
 video_stream_widget = VideoStreamWidget(0)
 video_stream_widget1 = VideoStreamWidget(1)
@@ -67,6 +68,7 @@ while True: #cap.isOpened():
 
     message1_cv2, message1_robot = act.add_action(classe_detected_1)
     message2_cv2, message2_robot = act.add_action(classe_detected_2)
+    # print(message1_cv2, message1_robot, message2_cv2, message2_robot)
 
     if(message1_robot!=-1): send_message(socket, message1_robot)
     if(message2_robot!=-1): send_message(socket, message2_robot)

@@ -13,9 +13,9 @@ mp_hands = mp.solutions.hands
 
 def mp_model():
     hands= mp_hands.Hands(
-    model_complexity=0,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5)
+        # model_complexity=0,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5)
     return hands
 
 def extract_joint_dataset(train_dir):

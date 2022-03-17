@@ -84,8 +84,8 @@ def send_message(socket, message_robot):
     socket.send(message_robot.encode())
     
     message = socket.recv()#  Get the reply.
-    # print("Received reply %s" % (message))
-    return message
+    print("Received reply %s" % (message))
+    # return message
 
 def pre_process_landmark(L):
     landmark_list=np.array([L]).reshape((21, 2))

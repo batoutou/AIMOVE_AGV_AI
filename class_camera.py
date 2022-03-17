@@ -61,8 +61,9 @@ class VideoStreamWidget(object):
             list_joints_image=pre_process_landmark(list_joints_image)
             probs = predict_model_FCNN(FCNN, list_joints_image)
             C=classes[int(probs)]
-            print("Source : ",self.src, " ; Classe : ", C)
+            # print("Source : ",self.src, " ; Classe : ", C)
         self.max_buff = self.mean_classes(C)
+        return self.max_buff
 
 
 
@@ -72,8 +73,8 @@ if __name__ == '__main__':
     video_stream_widget = VideoStreamWidget(0)
     video_stream_widget1 = VideoStreamWidget(1)
 
-    FCNN = keras.models.load_model(r'IA_AGV\FCNN\FCNN_model')
-    classes = class_extract(r'IA_AGV\data\train')
+    FCNN = keras.models.load_model(r'FCNN\FCNN_model')
+    classes = class_extract(r'data\train')
     print("classes : ", classes)
 
     while True:
