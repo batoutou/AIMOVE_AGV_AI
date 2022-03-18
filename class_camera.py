@@ -1,21 +1,16 @@
-import cv2
 from FCNN.model_FCNN import *
 from manager.webcam_manager import *
 from manager.i_o_manager import *
 from manager.actions import *
-import keras
-
-buff = collections.deque(maxlen=10)
-
+import keras, cv2, time
 from threading import Thread
-import cv2, time
+buff = collections.deque(maxlen=10)
 
 class VideoStreamWidget(object):
     def __init__(self, src=0):
         self.src=src
         self.capture = cv2.VideoCapture(self.src)
-        # Start the thread to read frames from the video stream
-        self.thread = Thread(target=self.update, args=())
+        self.thread = Thread(target=self.update, args=()) # Start the thread to read frames from the video stream
         self.thread.daemon = True
         self.thread.start()
 
@@ -24,28 +19,14 @@ class VideoStreamWidget(object):
         self.image_height, self.image_width,_ = self.height_width()
         self.max_buff=0
 
-        self.FPS=0
-        self.previousTime=0
-        self.currentTime=0
-        self.t_prog=0
-
-    def FPS_calcul(self):
-        self.currentTime = time.time()      # Calculating the FPS
-        self.t_prog=self.currentTime-self.previousTime
-        self.FPS = 1 / (self.currentTime-self.previousTime)
-        self.previousTime = self.currentTime
-
     def update(self):
         # Read the next frame from the stream in a different thread
-        self.FPS_calcul()
         while True:
             if self.capture.isOpened():
                 (self.status, self.frame) = self.capture.read()
-            time.sleep(.01)
+            # time.sleep(.01)
 
     def show_frame(self):
-        # Display frames in main program
-        cv2.putText(self.frame, str(self.FPS), (10,  10), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
         cv2.putText(self.frame, str(self.max_buff), (10,  self.image_height-10), cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,255), 2)
         cv2.imshow('Windows webcam nb {}'.format(self.src), self.frame)
         key = cv2.waitKey(1)
@@ -67,7 +48,7 @@ class VideoStreamWidget(object):
         hands = mp_model()
         self.frame.flags.writeable = True
         self.frame, results = mediapipe_detection(self.frame, hands)
-        self.frame = draw_landmark(self.frame, results)
+        # self.frame = draw_landmark(self.frame, results)
         list_joints_image = exctract_joint_image(self.frame, results)
         C="No class detected"
         if(len(list_joints_image)==42):
@@ -78,13 +59,9 @@ class VideoStreamWidget(object):
         self.max_buff = self.mean_classes(C)
         return self.max_buff
 
-
-
-
-
 if __name__ == '__main__':
     video_stream_widget = VideoStreamWidget(0)
-    # video_stream_widget1 = VideoStreamWidget(1)
+    video_stream_widget1 = VideoStreamWidget(1)
 
     FCNN = keras.models.load_model(r'FCNN\FCNN_model')
     classes = class_extract(r'data\train')
@@ -93,10 +70,10 @@ if __name__ == '__main__':
     while True:
         try:
             video_stream_widget.detect_class(FCNN,classes)
-            # video_stream_widget1.detect_class(FCNN,classes)
+            video_stream_widget1.detect_class(FCNN,classes)
             
             video_stream_widget.show_frame()
-            # video_stream_widget1.show_frame()
+            video_stream_widget1.show_frame()
         except AttributeError:
             pass
 

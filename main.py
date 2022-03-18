@@ -15,7 +15,8 @@ from FCNN.model_FCNN import *
 from manager.webcam_manager import *
 from manager.i_o_manager import *
 from manager.actions import *
-from class_camera import *
+# from class_camera import *
+from test import *
 
 # Mode = "TRAIN_MODE"
 Mode = "TEST_MODE"
@@ -45,43 +46,45 @@ classes = class_extract(r'data\train')
 print("classes : ",classes)
 # sys.exit()
 
-
+# Gère la connection TCP/IP
 context = zmq.Context()
-
 print("Connecting to hello world server…")  #  Socket to talk to server
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://172.20.10.2:5555")
-# socket.connect("tcp://172.20.10.14:5555")
+socket.connect("tcp://172.20.10.2:5555") #gautier
+# socket.connect("tcp://172.20.10.14:5555") #françois 
 
-video_stream_widget = VideoStreamWidget(0)
-video_stream_widget1 = VideoStreamWidget(1)
+#Gère une liste de webcam
+list_camera=[0,1]
+action_administrator_liste=[]
+video_getter_list=[]
 
-act = action(classes)  # To order the actions
+for i in range(len(list_camera)): 
+    video_getter_list.append(VideoGet(list_camera[i]).start())
+    action_administrator_liste.append(action(classes))#To order the actions
 
-while True: #cap.isOpened():
-    classe_detected_1 = video_stream_widget.detect_class(FCNN,classes)
-    classe_detected_2 = video_stream_widget1.detect_class(FCNN,classes)
+cps = CountsPerSec().start()
+
+while True:
+    if (cv2.waitKey(1) == ord("q")):
+        for i in range(len(list_camera)): video_getter_list[i].stop()
     
-    video_stream_widget.show_frame()
-    video_stream_widget1.show_frame()
+    frame_list=[]
+    classe_detected_list=[]
+    message_cv2_list=[]
+    message_robot_list=[]
 
-    message1_cv2, message1_robot = act.add_action(classe_detected_1)
-    message2_cv2, message2_robot = act.add_action(classe_detected_2)
-    # print(message1_cv2, message1_robot, message2_cv2, message2_robot)
+    for i in range(len(list_camera)): 
+        frame_list.append(video_getter_list[i].frame)
+        classe_detected_list.append(video_getter_list[i].detect_class(FCNN, classes))
 
-    if(message1_robot!=-1): send_message(socket, message1_robot)
-    if(message2_robot!=-1): send_message(socket, message2_robot)
+        frame_list[i] = putIterationsPerSec(frame_list[i], cps.countsPerSec())
+        frame_list[i] = putClasse(frame_list[i], classe_detected_list[i])
+        
+        _, X = action_administrator_liste[i].add_action(classe_detected_list[i])
+        message_robot_list.append(X)
 
-    # time_prog, previousTime, image = FPS(message_cv2, C, previousTime, image)
+        if(message_robot_list[i]!=-1): send_message(socket, message_robot_list[i])
 
-    # image = cv2.resize(image, (0,0), fx=ratio_image, fy=ratio_image) 
+        cv2.imshow("Video{}".format(i), frame_list[i])
 
-    # cv2.imshow('MediaPipe Hands', image)
-
-    sleep(video_stream_widget.time_prog, video_stream_widget.FPS)
-
-    # pressedKey = cv2.waitKey(1) & 0xFF
-
-    # if pressedKey == ord("q"): 
-    #     cap.release()
-    #     break
+    cps.increment()
