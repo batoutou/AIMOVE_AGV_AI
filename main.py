@@ -39,9 +39,9 @@ if (Mode == "TRAIN_MODE"):
     FCNN.save('FCNN/FCNN_model')
     print("FCNN saved")
         
-if(Mode == "TEST_MODE"): FCNN = keras.models.load_model(r'IA_AGV\FCNN\FCNN_model')
+if(Mode == "TEST_MODE"): FCNN = keras.models.load_model('./FCNN/FCNN_model')
 
-classes = class_extract(r'IA_AGV\data\train')
+classes = class_extract('./data/train')
 print("classes : ",classes)
 # sys.exit()
 
@@ -54,7 +54,7 @@ context = zmq.Context()
 #  Socket to talk to server
 print("Connecting to hello world server…")
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://172.20.10.2:5555")
+socket.connect("tcp://192.168.137.121:5555")
 
 while True:#cap.isOpened():
 
